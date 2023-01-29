@@ -36,3 +36,25 @@ def build_tag_creation_code(tag_name: str) -> str:
         Assumes that the file is stored in a subdirectory of the directory with the tag_manager.py file'''
     intermediary = f"from ..tag_manager import manager\nmanager.create_tag('{tag_name}')"
     return intermediary
+
+def build_tag_activation_keybind(keybind: str, tag_name: str) -> str:
+    intermediary = build_key_command_start(keybind)
+    intermediary += build_tag_activation_action_call(tag_name)
+    return intermediary
+
+def build_tag_deactivation_keybind(keybind: str, tag_name: str):
+    intermediary = build_key_command_start(keybind)
+    intermediary += build_tag_deactivation_action_call(tag_name)
+    return intermediary
+
+def build_key_command_start(keybind: str) -> str:
+    intermediary = f'key({keybind})\n'
+    return intermediary
+
+def build_tag_activation_action_call(tag_name: str) -> str:
+    intermediary = f"\tuser.talon_key_rebindings_activate_tag('{tag_name}\n\n')"
+    return intermediary
+
+def build_tag_deactivation_action_call(tag_name: str) -> str:
+    intermediary = f"\tuser.talon_key_rebindings_deactivate_tag('{tag_name}\n\n')"
+    return intermediary
