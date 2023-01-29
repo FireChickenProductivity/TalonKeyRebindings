@@ -52,9 +52,9 @@ def build_key_command_start(keybind: str) -> str:
     return intermediary
 
 def build_tag_activation_action_call(tag_name: str) -> str:
-    intermediary = f"\tuser.talon_key_rebindings_activate_tag('{tag_name}\n\n')"
+    intermediary = f"\tuser.talon_key_rebindings_activate_tag('{tag_name}')\n\n"
     return intermediary
 
 def build_tag_deactivation_action_call(tag_name: str) -> str:
-    intermediary = f"\tuser.talon_key_rebindings_deactivate_tag('{tag_name}\n\n')"
+    intermediary = f"\tuser.talon_key_rebindings_deactivate_tag('{tag_name}')\n\n"
     return intermediary
