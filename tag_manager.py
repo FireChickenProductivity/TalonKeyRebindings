@@ -27,7 +27,7 @@ class TagManager:
             tag_context = self.tags[tag_name]
             tag_context.tags = [tag_name]
         else:
-            self.raise_invalid_tag_exception(tag_name)
+            raise_invalid_tag_exception(tag_name)
 
     def tag_off(self, tag_name: str):
         '''Takes the tag name as an argument.
@@ -35,14 +35,14 @@ class TagManager:
         if self.has_tag(tag_name):
             self.tags[tag_name].tags = []
         else:
-            self.raise_invalid_tag_exception(tag_name)
+            raise_invalid_tag_exception(tag_name)
     
     def has_tag(self, tag_name: str) -> bool:
         '''Takes the tag name as an argument.
             Returns true if a tag with the name is in the manager and false otherwise.'''
         return self.tags.get(tag_name) != None
     
-    def raise_invalid_tag_exception(self, tag_name: str):
+def raise_invalid_tag_exception(tag_name: str):
         raise InvalidTagException(f'The tag manager does not have the tag {tag_name}!')
 
 def compute_tag_description(tag_name: str) -> str:
