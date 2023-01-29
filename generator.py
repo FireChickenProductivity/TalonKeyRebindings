@@ -48,7 +48,7 @@ def build_tag_deactivation_keybind(keybind: str, tag_name: str):
     return intermediary
 
 def build_key_command_start(keybind: str) -> str:
-    intermediary = f'key({keybind})\n'
+    intermediary = f'key({keybind}):\n'
     return intermediary
 
 def build_tag_activation_action_call(tag_name: str) -> str:
