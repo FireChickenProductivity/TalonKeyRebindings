@@ -43,7 +43,7 @@ def build_tag_activation_keybind(keybind: str, tag_name: str) -> str:
     intermediary += build_tag_activation_action_call(tag_name)
     return intermediary
 
-def build_tag_deactivation_keybind(keybind: str, tag_name: str):
+def build_tag_deactivation_keybind(keybind: str, tag_name: str) -> str:
     '''Returns talon script code to bind to the specified keybind the deactivation of the specified tag in the tag manager'''
     intermediary = build_key_command_start(keybind)
     intermediary += build_tag_deactivation_action_call(tag_name)
