@@ -38,23 +38,28 @@ def build_tag_creation_code(tag_name: str) -> str:
     return intermediary
 
 def build_tag_activation_keybind(keybind: str, tag_name: str) -> str:
+    '''Returns talon script code to bind to the specified keybind the activation of the specified tag in the tag manager'''
     intermediary = build_key_command_start(keybind)
     intermediary += build_tag_activation_action_call(tag_name)
     return intermediary
 
 def build_tag_deactivation_keybind(keybind: str, tag_name: str):
+    '''Returns talon script code to bind to the specified keybind the deactivation of the specified tag in the tag manager'''
     intermediary = build_key_command_start(keybind)
     intermediary += build_tag_deactivation_action_call(tag_name)
     return intermediary
 
 def build_key_command_start(keybind: str) -> str:
+    '''Returns the start of a keypress talon script command given the keybind to bind the command to'''
     intermediary = f'key({keybind}):\n'
     return intermediary
 
 def build_tag_activation_action_call(tag_name: str) -> str:
+    '''Returns the telling script code to activate the tag in the tag manager specified by name'''
     intermediary = f"\tuser.talon_key_rebindings_activate_tag('{tag_name}')\n\n"
     return intermediary
 
 def build_tag_deactivation_action_call(tag_name: str) -> str:
+    '''Returns the telling script code to activate the tag specified by name in the tag manager'''
     intermediary = f"\tuser.talon_key_rebindings_deactivate_tag('{tag_name}')\n\n"
     return intermediary
