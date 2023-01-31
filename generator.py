@@ -6,7 +6,8 @@ class TalonBuilder:
     def __init__(self, contexts: ContextSet):
         self.contexts = contexts
         self.user_callback = lambda: None
-        self.files = {}
+        self.talon_files = {}
+        self.python_files = {}
 
     def callback(self):
         self.build()
@@ -25,7 +26,8 @@ class TalonBuilder:
                 else:
                     keybind_talonscript = build_key_rebind(real_key, action_description)
                 intermediary += keybind_talonscript
-            self.files[context_tag_name] = intermediary
+            self.talon_files[context.context] = intermediary
+            self.python_files[context.context] = build_tag_creation_code(context_tag_name)
 
     def watch(self, callback):
         self.contexts.reload_callback = self.callback
