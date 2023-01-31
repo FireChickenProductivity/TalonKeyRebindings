@@ -1,3 +1,4 @@
+from re import A
 from .ingest import ContextSet
 
 
@@ -26,10 +27,21 @@ class TalonBuilder:
         self.build()
         self.watch(callback)
 
+def is_action_tag_activatation(action: str):
+    return action.startswith('on ')
+
+def is_action_tag_deactivatation(action: str):
+    return action.startswith('off ')
+    
 def compute_tag_name_for_context(context_name: str) -> str:
     '''Computes the tag name for a context given its name'''
     tag_name_with_project_prefix = 'user.keybinder_' + context_name
     return tag_name_with_project_prefix
+
+def build_key_rebind(real_key: str, target_key: str):
+    intermediary = build_key_command_start(real_key)
+    intermediary += f'\n\tkey({target_key})\n\n'
+    return intermediary
 
 def build_tag_creation_code(tag_name: str) -> str:
     '''Returns the python code for a file that creates a tag with the specified tag name using the tag manager.
