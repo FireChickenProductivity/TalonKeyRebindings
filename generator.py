@@ -60,7 +60,7 @@ def compute_tag_change_action_tag(action: str):
 
 def build_key_rebind(real_key: str, target_key: str):
     intermediary = build_key_command_start(real_key)
-    intermediary += f'\n\tkey({target_key})\n\n'
+    intermediary += f'\tkey({target_key})\n\n'
     return intermediary
 
 def build_tag_creation_code(tag_name: str) -> str:
