@@ -1,9 +1,10 @@
 import csv
 import re
 import os
-from talon import resource
 from talon import fs
+from .fire_chicken.path_utilities import compute_file_directory, create_directory_if_nonexistent
 
+INPUT_DIRECTORY = os.path.join(compute_file_directory(__file__), 'Key Bindings')
 
 class InvalidBindException(Exception):
     pass
@@ -54,3 +55,8 @@ class ContextSet:
 
     def __iter__(self):
         return self.bindings.__iter__()
+    
+def set_up():
+    create_directory_if_nonexistent(INPUT_DIRECTORY)
+    
+set_up()
