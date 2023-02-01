@@ -34,6 +34,12 @@ class Keybinds:
 
     def __iter__(self):
         return self.bindings.items().__iter__()
+    
+    def __str__(self) -> str:
+        return f'Keybinds(context: {self.context}, bindings: {self.bindings}'
+    
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class ContextSet:
@@ -43,11 +49,13 @@ class ContextSet:
 
     # FIXME: in the event the script is not unloaded this will cause memory usage to balloon
     def reload(self, directory: str):
+        self.bindings = []
         for filename in os.listdir(directory):
             binding = Keybinds()
-            binding.load(filename)
+            binding.load(directory, filename)
             self.bindings.append(binding)
         self.reload_callback()
+        print('self.bindings', self.bindings)
 
     def load(self, directory: str):
         fs.watch(directory, lambda path, flags: self.reload(directory))
@@ -58,5 +66,7 @@ class ContextSet:
     
 def set_up():
     create_directory_if_nonexistent(INPUT_DIRECTORY)
+    context_set = ContextSet()
+    context_set.load(INPUT_DIRECTORY)
     
 set_up()
