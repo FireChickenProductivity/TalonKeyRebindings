@@ -55,7 +55,6 @@ class ContextSet:
             binding.load(directory, filename)
             self.bindings.append(binding)
         self.reload_callback()
-        print('self.bindings', self.bindings)
 
     def load(self, directory: str):
         fs.watch(directory, lambda path, flags: self.reload(directory))
