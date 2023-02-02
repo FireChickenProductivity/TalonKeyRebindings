@@ -2,7 +2,6 @@ import csv
 import re
 import os
 from talon import fs
-from .fire_chicken.path_utilities import compute_file_directory, create_directory_if_nonexistent
 
 class InvalidBindException(Exception):
     pass
@@ -43,6 +42,9 @@ class ContextSet:
     def __init__(self):
         self.bindings = []
         self.reload_callback = lambda: None
+
+    def set_reload_callback(self,callback):
+        self.reload_callback = callback
 
     # FIXME: in the event the script is not unloaded this will cause memory usage to balloon
     def reload(self, directory: str):
