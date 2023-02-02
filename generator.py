@@ -1,3 +1,4 @@
+from re import A
 from .ingest import ContextSet
 
 
@@ -5,7 +6,8 @@ class TalonBuilder:
     def __init__(self, contexts: ContextSet):
         self.contexts = contexts
         self.user_callback = lambda: None
-        self.files = {}
+        self.talon_files = {}
+        self.python_files = {}
 
     def callback(self):
         self.build()
@@ -13,10 +15,19 @@ class TalonBuilder:
 
     def build(self):
         for context in self.contexts:
-            intermediary = ''
-            for real_key, target_key in context:
-                intermediary += f'key({real_key}):\n\tkey({target_key})\n\n'
-            self.files[compute_tag_name_for_context(context.context)] = intermediary
+            context_tag_name = compute_tag_name_for_context(context.context)
+            intermediary = compute_talon_script_header(context_tag_name)
+            for real_key, action_description in context:
+                keybind_talonscript = ''
+                if is_action_tag_activatation(action_description):
+                    keybind_talonscript = build_tag_activation_keybind(real_key, compute_tag_change_action_tag(action_description))
+                elif is_action_tag_deactivatation(action_description):
+                    keybind_talonscript = build_tag_deactivation_keybind(real_key, compute_tag_change_action_tag(action_description))
+                else:
+                    keybind_talonscript = build_key_rebind(real_key, action_description)
+                intermediary += keybind_talonscript
+            self.talon_files[context.context] = intermediary
+            self.python_files[context.context] = build_tag_creation_code(context_tag_name)
 
     def watch(self, callback):
         self.contexts.reload_callback = self.callback
@@ -26,15 +37,38 @@ class TalonBuilder:
         self.build()
         self.watch(callback)
 
+def compute_talon_script_header(required_tag_name: str):
+    header = f'tag: {required_tag_name}\n-\n'
+    return header
+
+def is_action_tag_activatation(action: str):
+    return action.startswith('on ')
+
+def is_action_tag_deactivatation(action: str):
+    return action.startswith('off ')
+
 def compute_tag_name_for_context(context_name: str) -> str:
     '''Computes the tag name for a context given its name'''
     tag_name_with_project_prefix = 'user.keybinder_' + context_name
     return tag_name_with_project_prefix
 
+def compute_tag_change_action_tag(action: str):
+    parts = action.split(' ')
+    tag_name = parts[1]
+    tag_name_with_appropriate_prefix = compute_tag_name_for_context(tag_name)
+    return tag_name_with_appropriate_prefix
+
+def build_key_rebind(real_key: str, target_key: str):
+    intermediary = build_key_command_start(real_key)
+    intermediary += f'\tkey({target_key})\n\n'
+    return intermediary
+
 def build_tag_creation_code(tag_name: str) -> str:
     '''Returns the python code for a file that creates a tag with the specified tag name using the tag manager.
         Assumes that the file is stored in a subdirectory of the directory with the tag_manager.py file'''
     intermediary = f"from ..tag_manager import manager\nmanager.create_tag('{tag_name}')"
+    if tag_name == compute_tag_name_for_context('main'):
+        intermediary += f"\nmanager.tag_on('{tag_name}')"
     return intermediary
 
 def build_tag_activation_keybind(keybind: str, tag_name: str) -> str:
