@@ -1,9 +1,8 @@
 import csv
 import re
 import os
-from talon import resource
 from talon import fs
-
+from .fire_chicken.path_utilities import compute_file_directory, create_directory_if_nonexistent
 
 class InvalidBindException(Exception):
     pass
@@ -12,17 +11,17 @@ class InvalidBindException(Exception):
 class InvalidContextException(Exception):
     pass
 
-
 class Keybinds:
     def __init__(self):
         self.context = ''
         self.bindings = {}
 
-    def load(self, target: str):
+    def load(self, directory: str, target: str):
         self.context = target.removesuffix('.csv')
-        if re.fullmatch('^[a-zA-Z_]+$') is None:
-            raise InvalidContextException('context names should only contain letters and underscore')
-        with resource.open(target, 'r') as file:
+        if re.fullmatch('^[a-zA-Z_]+$', self.context) is None:
+            raise InvalidContextException(f'Invalid context name: {self.context} Context names should only contain letters and underscore')
+        filepath = os.path.join(directory, target)
+        with open(filepath, 'r') as file:
             reader = csv.reader(file, delimiter=',')
             for index, row in enumerate(reader):
                 if len(row) != 2:
@@ -32,6 +31,12 @@ class Keybinds:
 
     def __iter__(self):
         return self.bindings.items().__iter__()
+    
+    def __str__(self) -> str:
+        return f'Keybinds(context: {self.context}, bindings: {self.bindings}'
+    
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class ContextSet:
@@ -40,16 +45,18 @@ class ContextSet:
         self.reload_callback = lambda: None
 
     # FIXME: in the event the script is not unloaded this will cause memory usage to balloon
-    def reload(self, folder: str):
-        for filename in os.listdir(folder):
+    def reload(self, directory: str):
+        self.bindings = []
+        for filename in os.listdir(directory):
             binding = Keybinds()
-            binding.load(filename)
+            binding.load(directory, filename)
             self.bindings.append(binding)
         self.reload_callback()
 
-    def load(self, folder: str):
-        fs.watch(folder, lambda path, flags: self.reload(folder))
-        self.reload(folder)
+    def load(self, directory: str):
+        fs.watch(directory, lambda path, flags: self.reload(directory))
+        self.reload(directory)
 
     def __iter__(self):
         return self.bindings.__iter__()
+    
