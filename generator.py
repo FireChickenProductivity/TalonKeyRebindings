@@ -1,6 +1,6 @@
 from re import A
 from .ingest import ContextSet
-
+import os
 
 class TalonBuilder:
     def __init__(self, contexts: ContextSet):
@@ -28,14 +28,49 @@ class TalonBuilder:
                 intermediary += keybind_talonscript
             self.talon_files[context.context] = intermediary
             self.python_files[context.context] = build_tag_creation_code(context_tag_name)
+        print(self.talon_files)
 
     def watch(self, callback):
-        self.contexts.reload_callback = self.callback
+        self.contexts.set_reload_callback(self.callback)
         self.user_callback = callback
 
     def build_and_watch(self, callback):
         self.build()
         self.watch(callback)
+    
+    def get_talon_files(self):
+        return self.talon_files
+    
+    def get_python_files(self):
+        return self.python_files
+
+class TalonGenerator:
+    def __init__(self, builder: TalonBuilder, output_directory):
+        self.builder = builder
+        self.builder.watch(self.generate_code)
+        self.output_directory = output_directory
+
+    def generate_code(self):
+        generate_python_files(self.output_directory, self.builder.get_python_files())
+        generate_talon_files(self.output_directory, self.builder.get_talon_files())
+
+def generate_python_files(directory, python_files):
+    for python_file_name in python_files:
+        generate_python_file(directory, python_file_name, python_files[python_file_name])
+
+def generate_python_file(directory, python_file_name, code):
+    path = os.path.join(directory, python_file_name + '.py')
+    with open(path, "w") as file:
+        file.write(code)
+
+def generate_talon_files(directory, talon_files):
+    for talon_file_name in talon_files:
+        generate_talon_file(directory, talon_file_name, talon_files[talon_file_name])
+   
+def generate_talon_file(directory, python_file_name, code):
+    path = os.path.join(directory, python_file_name + '.talon')
+    with open(path, "w") as file:
+        file.write(code)
 
 def compute_talon_script_header(required_tag_name: str):
     header = f'tag: {required_tag_name}\n-\n'
