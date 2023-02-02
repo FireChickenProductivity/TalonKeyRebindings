@@ -4,15 +4,12 @@ import os
 from talon import fs
 from .fire_chicken.path_utilities import compute_file_directory, create_directory_if_nonexistent
 
-INPUT_DIRECTORY = os.path.join(compute_file_directory(__file__), 'Key Bindings')
-
 class InvalidBindException(Exception):
     pass
 
 
 class InvalidContextException(Exception):
     pass
-
 
 class Keybinds:
     def __init__(self):
@@ -63,9 +60,3 @@ class ContextSet:
     def __iter__(self):
         return self.bindings.__iter__()
     
-def set_up():
-    create_directory_if_nonexistent(INPUT_DIRECTORY)
-    context_set = ContextSet()
-    context_set.load(INPUT_DIRECTORY)
-    
-set_up()
