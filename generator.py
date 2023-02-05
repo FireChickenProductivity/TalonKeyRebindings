@@ -49,19 +49,28 @@ class TalonBuilder:
         return self.python_files
 
 class TalonGenerator:
-    def __init__(self, builder: TalonBuilder, output_directory):
+    def __init__(self, builder: TalonBuilder, output_directory, tag_manager_filepath):
         self.builder = builder
         self.builder.watch(self.generate_code)
         self.output_directory = output_directory
+        self.tag_manager_filepath = tag_manager_filepath
 
     def generate_code(self):
         remove_files_from(self.output_directory)
+        refresh_file(self.tag_manager_filepath)
         generate_python_files(self.output_directory, self.builder.get_python_files())
         generate_talon_files(self.output_directory, self.builder.get_talon_files())
 
 def remove_files_from(directory):
     for filename in os.listdir(directory):
         os.remove(os.path.join(directory, filename))
+
+def refresh_file(path):
+    contents = ''
+    with open(path, 'r') as original:
+        contents = original.read()
+    with open(path, 'w') as output:
+        output.write(contents)
 
 def generate_python_files(directory, python_files):
     for python_file_name in python_files:
