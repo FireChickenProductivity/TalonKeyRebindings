@@ -120,8 +120,6 @@ def build_tag_creation_code(tag_name: str) -> str:
     '''Returns the python code for a file that creates a tag with the specified tag name using the tag manager.
         Assumes that the file is stored in a subdirectory of the directory with the tag_manager.py file'''
     intermediary = f"from ..tag_manager import manager\nmanager.create_tag('{tag_name}')"
-    if tag_name == compute_tag_name_for_context('main'):
-        intermediary += f"\nmanager.tag_on('{tag_name}')"
     return intermediary
 
 def build_tag_activation_keybind(keybind: str, tag_name: str) -> str:
