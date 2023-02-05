@@ -4,8 +4,11 @@ import os
 
 class TalonBuilder:
     def __init__(self, contexts: ContextSet):
-        self.contexts = contexts
         self.user_callback = lambda: None
+        self.initialize_file_representations()
+        self.contexts = contexts
+
+    def initialize_file_representations(self):
         self.talon_files = {}
         self.python_files = {}
 
@@ -14,6 +17,7 @@ class TalonBuilder:
         self.user_callback()
 
     def build(self):
+        self.initialize_file_representations()
         for context in self.contexts:
             context_tag_name = compute_tag_name_for_context(context.context)
             intermediary = compute_talon_script_header(context_tag_name)
@@ -51,8 +55,13 @@ class TalonGenerator:
         self.output_directory = output_directory
 
     def generate_code(self):
+        remove_files_from(self.output_directory)
         generate_python_files(self.output_directory, self.builder.get_python_files())
         generate_talon_files(self.output_directory, self.builder.get_talon_files())
+
+def remove_files_from(directory):
+    for filename in os.listdir(directory):
+        os.remove(os.path.join(directory, filename))
 
 def generate_python_files(directory, python_files):
     for python_file_name in python_files:
