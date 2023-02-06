@@ -17,3 +17,6 @@ f,off editing
 The first line rebinds a to b. The second binds c to control s. The third binds d to activating the keybindings in the "editing.csv" file. The fourth binds f to deactivating the keybindings in the "editing.csv" file. Keys are specified the way you specify them to talon normally (see this wiki page for details: https://talon.wiki/key_action/). 
 
 In general, keybindings are of the form: (keystroke),(keystroke or context change)
+
+# Known Issues
+The keybindings may not load at all if any of the files are formatted incorrectly.
