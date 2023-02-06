@@ -1,3 +1,6 @@
+# Note
+This is a work in progress. There may be unidentified issues.
+
 # Installation
 Download the code, unzip, and place in the talon user directory. After talon runs, it should generate the needed folders.
 
