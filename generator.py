@@ -1,11 +1,14 @@
 from re import A
 from .ingest import ContextSet
-
+import os
 
 class TalonBuilder:
     def __init__(self, contexts: ContextSet):
-        self.contexts = contexts
         self.user_callback = lambda: None
+        self.initialize_file_representations()
+        self.contexts = contexts
+
+    def initialize_file_representations(self):
         self.talon_files = {}
         self.python_files = {}
 
@@ -14,6 +17,7 @@ class TalonBuilder:
         self.user_callback()
 
     def build(self):
+        self.initialize_file_representations()
         for context in self.contexts:
             context_tag_name = compute_tag_name_for_context(context.context)
             intermediary = compute_talon_script_header(context_tag_name)
@@ -28,14 +32,63 @@ class TalonBuilder:
                 intermediary += keybind_talonscript
             self.talon_files[context.context] = intermediary
             self.python_files[context.context] = build_tag_creation_code(context_tag_name)
+        print(self.talon_files)
 
     def watch(self, callback):
-        self.contexts.reload_callback = self.callback
+        self.contexts.set_reload_callback(self.callback)
         self.user_callback = callback
 
     def build_and_watch(self, callback):
         self.build()
         self.watch(callback)
+    
+    def get_talon_files(self):
+        return self.talon_files
+    
+    def get_python_files(self):
+        return self.python_files
+
+class TalonGenerator:
+    def __init__(self, builder: TalonBuilder, output_directory, tag_manager_filepath):
+        self.builder = builder
+        self.builder.watch(self.generate_code)
+        self.output_directory = output_directory
+        self.tag_manager_filepath = tag_manager_filepath
+
+    def generate_code(self):
+        remove_files_from(self.output_directory)
+        refresh_file(self.tag_manager_filepath)
+        generate_python_files(self.output_directory, self.builder.get_python_files())
+        generate_talon_files(self.output_directory, self.builder.get_talon_files())
+
+def remove_files_from(directory):
+    for filename in os.listdir(directory):
+        os.remove(os.path.join(directory, filename))
+
+def refresh_file(path):
+    contents = ''
+    with open(path, 'r') as original:
+        contents = original.read()
+    with open(path, 'w') as output:
+        output.write(contents)
+
+def generate_python_files(directory, python_files):
+    for python_file_name in python_files:
+        generate_python_file(directory, python_file_name, python_files[python_file_name])
+
+def generate_python_file(directory, python_file_name, code):
+    path = os.path.join(directory, python_file_name + '.py')
+    with open(path, "w") as file:
+        file.write(code)
+
+def generate_talon_files(directory, talon_files):
+    for talon_file_name in talon_files:
+        generate_talon_file(directory, talon_file_name, talon_files[talon_file_name])
+   
+def generate_talon_file(directory, python_file_name, code):
+    path = os.path.join(directory, python_file_name + '.talon')
+    with open(path, "w") as file:
+        file.write(code)
 
 def compute_talon_script_header(required_tag_name: str):
     header = f'tag: {required_tag_name}\n-\n'
@@ -67,8 +120,6 @@ def build_tag_creation_code(tag_name: str) -> str:
     '''Returns the python code for a file that creates a tag with the specified tag name using the tag manager.
         Assumes that the file is stored in a subdirectory of the directory with the tag_manager.py file'''
     intermediary = f"from ..tag_manager import manager\nmanager.create_tag('{tag_name}')"
-    if tag_name == compute_tag_name_for_context('main'):
-        intermediary += f"\nmanager.tag_on('{tag_name}')"
     return intermediary
 
 def build_tag_activation_keybind(keybind: str, tag_name: str) -> str:

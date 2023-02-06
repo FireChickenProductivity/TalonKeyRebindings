@@ -1,5 +1,6 @@
 from talon import Module, Context
 from .fire_chicken.tag_utilities import compute_postfix
+from .tag_manager_state_tracker import tracker
 
 class InvalidTagException(Exception):
     pass
@@ -19,6 +20,8 @@ class TagManager:
         self.module.tag(postfix, desc = compute_tag_description(tag_name))
         tag_context = Context()
         self.tags[tag_name] = tag_context
+        if tracker.has(tag_name):
+            self.tag_on(tag_name)
 
     def tag_on(self, tag_name: str):
         '''Takes the tag name as an argument.
@@ -26,6 +29,7 @@ class TagManager:
         if self.has_tag(tag_name):
             tag_context = self.tags[tag_name]
             tag_context.tags = [tag_name]
+            tracker.insert(tag_name)
         else:
             raise_invalid_tag_exception(tag_name)
 
@@ -34,6 +38,7 @@ class TagManager:
             Deactivates the tag if it is in the manager and otherwise raises an InvalidTagException'''
         if self.has_tag(tag_name):
             self.tags[tag_name].tags = []
+            tracker.remove(tag_name)
         else:
             raise_invalid_tag_exception(tag_name)
     
@@ -41,6 +46,7 @@ class TagManager:
         '''Takes the tag name as an argument.
             Returns true if a tag with the name is in the manager and false otherwise.'''
         return self.tags.get(tag_name) != None
+
     
 def raise_invalid_tag_exception(tag_name: str):
         raise InvalidTagException(f'The tag manager does not have the tag {tag_name}!')
