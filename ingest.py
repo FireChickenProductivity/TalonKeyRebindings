@@ -3,7 +3,6 @@ import re
 import os
 from talon import fs
 
-CSV_FILE_EXTENSION = '.csv'
 TEXT_FILE_EXTENSION = '.txt'
 
 class InvalidBindException(Exception):
@@ -40,14 +39,10 @@ class Keybinds:
         return self.__str__()
 
 def compute_context_name(filename: str):
-    extension = ''
-    if file_has_extension(filename, CSV_FILE_EXTENSION):
-        extension = CSV_FILE_EXTENSION
-    elif file_has_extension(filename, TEXT_FILE_EXTENSION):
-        extension = TEXT_FILE_EXTENSION
+    if file_has_extension(filename, TEXT_FILE_EXTENSION):
+        return filename.removesuffix(TEXT_FILE_EXTENSION)
     else:
-        raise InvalidContextException(f'The file {filename} has an invalid file format! Must be {CSV_FILE_EXTENSION} or {TEXT_FILE_EXTENSION}')
-    return filename.removesuffix(extension)
+        raise InvalidContextException(f'The file {filename} has an invalid file extension! Must be {TEXT_FILE_EXTENSION}')
 
 def file_has_extension(filename: str, extension: str):
     return filename.endswith(extension) and filename.count('.') == 1
