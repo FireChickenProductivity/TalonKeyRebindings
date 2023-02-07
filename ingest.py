@@ -3,9 +3,10 @@ import re
 import os
 from talon import fs
 
+TEXT_FILE_EXTENSION = '.txt'
+
 class InvalidBindException(Exception):
     pass
-
 
 class InvalidContextException(Exception):
     pass
@@ -15,11 +16,11 @@ class Keybinds:
         self.context = ''
         self.bindings = {}
 
-    def load(self, directory: str, target: str):
-        self.context = target.removesuffix('.csv')
+    def load(self, directory: str, filename: str):
+        self.context = compute_context_name(filename)
         if re.fullmatch('^[a-zA-Z_]+$', self.context) is None:
             raise InvalidContextException(f'Invalid context name: {self.context} Context names should only contain letters and underscore')
-        filepath = os.path.join(directory, target)
+        filepath = os.path.join(directory, filename)
         with open(filepath, 'r') as file:
             reader = csv.reader(file, delimiter=',')
             for index, row in enumerate(reader):
@@ -37,6 +38,14 @@ class Keybinds:
     def __repr__(self) -> str:
         return self.__str__()
 
+def compute_context_name(filename: str):
+    if file_has_extension(filename, TEXT_FILE_EXTENSION):
+        return filename.removesuffix(TEXT_FILE_EXTENSION)
+    else:
+        raise InvalidContextException(f'The file {filename} has an invalid file extension! Must be {TEXT_FILE_EXTENSION}')
+
+def file_has_extension(filename: str, extension: str):
+    return filename.endswith(extension) and filename.count('.') == 1
 
 class ContextSet:
     def __init__(self):
