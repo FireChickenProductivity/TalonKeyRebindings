@@ -2,6 +2,8 @@ from re import A
 from .ingest import ContextSet
 import os
 
+MOUSE_BINDING_PREFIX = 'mouse '
+
 class TalonBuilder:
     def __init__(self, contexts: ContextSet):
         self.user_callback = lambda: None
@@ -103,7 +105,7 @@ def is_action_tag_deactivatation(action: str):
     return action.startswith('off ')
 
 def is_mouse_button_binding(action: str):
-    return action.startswith('mouse ')
+    return action.startswith(MOUSE_BINDING_PREFIX)
 
 def compute_tag_name_for_context(context_name: str) -> str:
     '''Computes the tag name for a context given its name'''
@@ -121,9 +123,15 @@ def build_key_rebind(real_key: str, target_key: str):
     intermediary += f'\tkey({target_key})\n\n'
     return intermediary
 
-def build_mouse_button_key_bind(key: str, mouse_button: str):
-    intermediary = f'key({key}:down): mouse_drag({mouse_button})\nkey({key}:up): mouse_release({mouse_button})'
+def build_mouse_button_key_bind(key: str, action: str):
+    mouse_button =compute_mouse_button_from_mouse_button_key_bind_description(action)
+    intermediary = f'key({key}:down): mouse_drag({mouse_button})\nkey({key}:up): mouse_release({mouse_button})\n\n'
     return intermediary
+
+def compute_mouse_button_from_mouse_button_key_bind_description(description: str):
+    position = len(MOUSE_BINDING_PREFIX)
+    button = description[position:]
+    return button
 
 def build_tag_creation_code(tag_name: str) -> str:
     '''Returns the python code for a file that creates a tag with the specified tag name using the tag manager.
