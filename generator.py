@@ -122,7 +122,7 @@ def build_key_rebind(real_key: str, target_key: str):
     return intermediary
 
 def build_mouse_button_key_bind(key: str, mouse_button: str):
-    intermediary = f'key({key}:down): mouse_drag({mouse_button})\nkey({key}:up): mouse_release({mouse_button}))'
+    intermediary = f'key({key}:down): mouse_drag({mouse_button})\nkey({key}:up): mouse_release({mouse_button})'
     return intermediary
 
 def build_tag_creation_code(tag_name: str) -> str:
