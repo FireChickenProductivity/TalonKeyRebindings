@@ -27,6 +27,8 @@ class TalonBuilder:
                     keybind_talonscript = build_tag_activation_keybind(real_key, compute_tag_change_action_tag(action_description))
                 elif is_action_tag_deactivatation(action_description):
                     keybind_talonscript = build_tag_deactivation_keybind(real_key, compute_tag_change_action_tag(action_description))
+                elif is_mouse_button_binding(action_description):
+                    keybind_talonscript = build_mouse_button_key_bind(real_key, action_description)
                 else:
                     keybind_talonscript = build_key_rebind(real_key, action_description)
                 intermediary += keybind_talonscript
@@ -100,6 +102,9 @@ def is_action_tag_activatation(action: str):
 def is_action_tag_deactivatation(action: str):
     return action.startswith('off ')
 
+def is_mouse_button_binding(action: str):
+    return action.startswith('mouse ')
+
 def compute_tag_name_for_context(context_name: str) -> str:
     '''Computes the tag name for a context given its name'''
     tag_name_with_project_prefix = 'user.keybinder_' + context_name
@@ -114,6 +119,10 @@ def compute_tag_change_action_tag(action: str):
 def build_key_rebind(real_key: str, target_key: str):
     intermediary = build_key_command_start(real_key)
     intermediary += f'\tkey({target_key})\n\n'
+    return intermediary
+
+def build_mouse_button_key_bind(key: str, mouse_button: str):
+    intermediary = f'key({key}:down): mouse_drag({mouse_button})\nkey({key}:up): mouse_release({mouse_button}))'
     return intermediary
 
 def build_tag_creation_code(tag_name: str) -> str:
