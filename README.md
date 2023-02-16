@@ -17,7 +17,9 @@ d,on editing
 
 f,off editing
 
-The first line rebinds a to b. The second binds c to control s. The third binds d to activating the keybindings in the "editing.txt" file. The fourth binds f to deactivating the keybindings in the "editing.txt" file. Keys are specified the way you specify them to talon normally (see this wiki page for details: https://talon.wiki/key_action/). 
+z,mouse 0
+
+The first line rebinds a to b. The second binds c to control s. The third binds d to activating the keybindings in the "editing.txt" file. The fourth binds f to deactivating the keybindings in the "editing.txt" file. Keys are specified the way you specify them to talon normally (see this wiki page for details: https://talon.wiki/key_action/). The fifth line binds z to the left mouse button.
 
 In general, keybindings are of the form: (keystroke),(keystroke or context change)
 
