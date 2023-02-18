@@ -27,7 +27,7 @@ class Tapping:
         self.interval = interval
         self.limit = limit
         self.taps_performed = 0
-        self.job = cron.interval('{interval}ms', self.tap)
+        self.job = cron.interval(f'{interval}ms', self.tap)
     
     def tap(self):
         if self.limit > 0:
@@ -42,6 +42,8 @@ class Tapping:
             cron.cancel(self.job)
         self.job = None
 
+tap_manager = TapManager()
+
 @module.action_class
 class Actions:
     def talon_key_rebindings_insert(text: str):
@@ -54,8 +56,8 @@ class Actions:
     
     def talon_key_rebindings_start_tap(keystroke: str, interval: float, limit: int = 0):
         ''''''
-        pass
+        tap_manager.start(keystroke, interval, limit)
 
     def talon_key_rebinding_stop_tap(keystroke: str):
         ''''''
-        pass
+        tap_manager.stop(keystroke)
