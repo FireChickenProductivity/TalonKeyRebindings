@@ -34,7 +34,8 @@ class Tapping:
             self.taps_performed += 1
         if self.taps_performed > self.limit:
             self.stop()
-        actions.key(self.keystroke)
+        else:
+            actions.key(self.keystroke)
     
     def stop(self):
         if self.job:
