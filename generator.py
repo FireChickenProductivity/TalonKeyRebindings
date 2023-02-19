@@ -157,7 +157,8 @@ def build_tapping_key_bind(key: str, action: str):
         intermediary += build_hold_down_key_command_start(key) + f'\tuser.talon_key_rebindings_start_tap("{keystroke}", {interval})\n\n'
         intermediary += build_release_key_command_start(key) + f'\tuser.talon_key_rebinding_stop_tap("{keystroke}")\n\n'
     else:
-        intermediary += build_key_command_start(key) + f'\tuser.talon_key_rebindings_start_tap("{keystroke}", {interval}, {limit})\n\n'
+        intermediary += build_hold_down_key_command_start(key) + f'\tskip()\n\n'
+        intermediary += build_release_key_command_start(key) + f'\tuser.talon_key_rebindings_start_tap("{keystroke}", {interval}, {limit})\n\n'
     return intermediary
 
 def build_hold_down_key_command_start(keybind: str):
