@@ -3,6 +3,8 @@ from .ingest import ContextSet
 import os
 
 MOUSE_BINDING_PREFIX = 'mouse '
+TYPING_BINDING_PREFIX = 'type '
+TAP_BINDING_KEYWORD = ' tap '
 
 class TalonBuilder:
     def __init__(self, contexts: ContextSet):
@@ -31,6 +33,8 @@ class TalonBuilder:
                     keybind_talonscript = build_tag_deactivation_keybind(real_key, compute_tag_change_action_tag(action_description))
                 elif is_mouse_button_binding(action_description):
                     keybind_talonscript = build_mouse_button_key_bind(real_key, action_description)
+                elif is_tap_binding(action_description):
+                    keybind_talonscript = build_tapping_key_bind(real_key, action_description)
                 else:
                     keybind_talonscript = build_key_rebind(real_key, action_description)
                 intermediary += keybind_talonscript
@@ -107,6 +111,12 @@ def is_action_tag_deactivatation(action: str):
 def is_mouse_button_binding(action: str):
     return action.startswith(MOUSE_BINDING_PREFIX)
 
+def is_tap_binding(action: str):
+    return ' tap ' in action and not is_typing_binding(action)
+
+def is_typing_binding(action: str):
+    return action.startswith(TYPING_BINDING_PREFIX)
+
 def compute_tag_name_for_context(context_name: str) -> str:
     '''Computes the tag name for a context given its name'''
     tag_name_with_project_prefix = 'user.keybinder_' + context_name
@@ -124,7 +134,7 @@ def build_key_rebind(real_key: str, target_key: str):
     return intermediary
 
 def build_mouse_button_key_bind(key: str, action: str):
-    mouse_button =compute_mouse_button_from_mouse_button_key_bind_description(action)
+    mouse_button = compute_mouse_button_from_mouse_button_key_bind_description(action)
     intermediary = f'key({key}:down): mouse_drag({mouse_button})\nkey({key}:up): mouse_release({mouse_button})\n\n'
     return intermediary
 
@@ -132,6 +142,29 @@ def compute_mouse_button_from_mouse_button_key_bind_description(description: str
     position = len(MOUSE_BINDING_PREFIX)
     button = description[position:]
     return button
+
+def build_tapping_key_bind(key: str, action: str):
+    arguments, _, keystroke = action.partition(TAP_BINDING_KEYWORD)
+    argument_list = arguments.split(' ')
+    limit = 0
+    interval = 0
+    intermediary = ''
+    if len(argument_list) > 0 and argument_list[0].isnumeric():
+        interval = int(argument_list[0])
+    if len(argument_list) > 1 and argument_list[1].isnumeric():
+        limit = int(argument_list[1])
+    if limit == 0:
+        intermediary += build_hold_down_key_command_start(key) + f'\tuser.talon_key_rebindings_start_tap("{keystroke}", {interval})\n\n'
+        intermediary += build_release_key_command_start(key) + f'\tuser.talon_key_rebinding_stop_tap("{keystroke}")\n\n'
+    else:
+        intermediary += build_key_command_start(key) + f'\tuser.talon_key_rebindings_start_tap("{keystroke}", {interval}, {limit})\n\n'
+    return intermediary
+
+def build_hold_down_key_command_start(keybind: str):
+    return build_key_command_start(keybind + ':down')
+
+def build_release_key_command_start(keybind: str):
+    return build_key_command_start(keybind + ':up')
 
 def build_tag_creation_code(tag_name: str) -> str:
     '''Returns the python code for a file that creates a tag with the specified tag name using the tag manager.
