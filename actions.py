@@ -27,12 +27,16 @@ class Tapping:
         self.interval = interval
         self.limit = limit
         self.taps_performed = 0
+        if self.limit > 0:
+            actions.key(self.keystroke)
+            self.taps_performed += 1
         self.job = cron.interval(f'{interval}ms', self.tap)
+
     
     def tap(self):
         if self.limit > 0:
             self.taps_performed += 1
-        if self.taps_performed > self.limit:
+        if self.taps_performed > self.limit and self.limit > 0:
             self.stop()
         else:
             actions.key(self.keystroke)
