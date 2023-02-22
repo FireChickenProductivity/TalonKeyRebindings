@@ -35,6 +35,8 @@ class TalonBuilder:
                     keybind_talonscript = build_mouse_button_key_bind(real_key, action_description)
                 elif is_tap_binding(action_description):
                     keybind_talonscript = build_tapping_key_bind(real_key, action_description)
+                elif is_typing_binding(action_description):
+                    keybind_talonscript = build_typing_key_bind(real_key, action_description)
                 else:
                     keybind_talonscript = build_key_rebind(real_key, action_description)
                 intermediary += keybind_talonscript
@@ -143,6 +145,13 @@ def compute_mouse_button_from_mouse_button_key_bind_description(description: str
     button = description[position:]
     return button
 
+def build_typing_key_bind(key: str, action: str):
+    intermediary = build_key_command_start(key)
+    text = compute_text_after_prefix(TYPING_BINDING_PREFIX, action)
+    properly_formatted_text = text.replace('"', '\\"')
+    intermediary += f'\tuser.talon_key_rebindings_insert("{properly_formatted_text}")\n\n'
+    return intermediary
+
 def build_tapping_key_bind(key: str, action: str):
     arguments, _, keystroke = action.partition(TAP_BINDING_KEYWORD)
     argument_list = arguments.split(' ')
@@ -199,3 +208,9 @@ def build_tag_deactivation_action_call(tag_name: str) -> str:
     '''Returns the telling script code to activate the tag specified by name in the tag manager'''
     intermediary = f"\tuser.talon_key_rebindings_deactivate_tag('{tag_name}')\n\n"
     return intermediary
+
+def compute_text_after_prefix(prefix: str, text: str):
+    '''Returns the text after the number of characters in the prefix. Currently assumes that the prefix starts the string'''
+    if prefix == text:
+        return ''
+    return text[len(prefix):]
