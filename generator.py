@@ -2,6 +2,7 @@ from re import A
 from .ingest import ContextSet
 import os
 from .fire_chicken.tag_utilities import compute_postfix
+from .tag_manager import manager
 
 MOUSE_BINDING_PREFIX = 'mouse '
 TYPING_BINDING_PREFIX = 'type '
@@ -68,7 +69,7 @@ class TalonGenerator:
 
     def generate_code(self):
         remove_files_from(self.output_directory)
-        refresh_file(self.tag_manager_filepath)
+        manager.reset()
         generate_python_files(self.output_directory, self.builder.get_python_files())
         generate_talon_files(self.output_directory, self.builder.get_talon_files())
 
