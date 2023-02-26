@@ -42,6 +42,8 @@ class TagManager:
             Returns true if a tag with the name is in the manager and false otherwise.'''
         return self.tags.get(tag_name) != None
 
+    def reset(self):
+        self.tags = {}
     
 def raise_invalid_tag_exception(tag_name: str):
         raise InvalidTagException(f'The tag manager does not have the tag {tag_name}!')
