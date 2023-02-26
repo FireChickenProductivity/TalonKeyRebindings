@@ -24,7 +24,9 @@ class Actions:
         ''''''
         filepath = get_keybinding_filepath(context_name) + '.txt'
         with open(filepath, 'a') as file:
-            file.write('\n' + text)
+            if os.path.getsize(filepath):
+                file.write('\n')
+            file.write(text)
             print('appending')
     
     def keybinder_remove_key_bind(binding_keystroke: str, context_name: str = 'main'):
