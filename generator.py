@@ -1,6 +1,7 @@
 from re import A
 from .ingest import ContextSet
 import os
+from .fire_chicken.tag_utilities import compute_postfix
 
 MOUSE_BINDING_PREFIX = 'mouse '
 TYPING_BINDING_PREFIX = 'type '
@@ -179,8 +180,13 @@ def build_release_key_command_start(keybind: str):
 def build_tag_creation_code(tag_name: str) -> str:
     '''Returns the python code for a file that creates a tag with the specified tag name using the tag manager.
         Assumes that the file is stored in a subdirectory of the directory with the tag_manager.py file'''
-    intermediary = f"from ..tag_manager import manager\nmanager.create_tag('{tag_name}')"
+    intermediary = f"from talon import Module\nmodule = Module()\nmodule.tag('{compute_postfix(tag_name)}', '{compute_tag_description(tag_name)}')\nfrom ..tag_manager import manager\nmanager.insert_tag('{tag_name}')"
     return intermediary
+
+def compute_tag_description(tag_name: str) -> str:
+    tag_postfix = compute_postfix(tag_name)
+    description = f'Activates the keybindings in the {tag_postfix} context'
+    return description
 
 def build_tag_activation_keybind(keybind: str, tag_name: str) -> str:
     '''Returns talon script code to bind to the specified keybind the activation of the specified tag in the tag manager'''
