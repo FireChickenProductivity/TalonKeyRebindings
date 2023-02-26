@@ -24,8 +24,23 @@ class Actions:
         ''''''
         filepath = get_keybinding_filepath(context_name) + '.txt'
         with open(filepath, 'a') as file:
-            file.write(text)
+            file.write('\n' + text)
             print('appending')
+    
+    def keybinder_remove_key_bind(binding_keystroke: str, context_name: str = 'main'):
+        ''''''
+        filepath = get_keybinding_filepath(context_name) + '.txt'
+        lines = []
+        with open(filepath, 'r') as file:
+            lines = file.readlines()
+        with open(filepath, 'w') as file:
+            for line in lines:
+                if does_not_match(line, binding_keystroke):
+                    file.write(line)
+
 
 def get_keybinding_filepath(context_name: str):
     return os.path.join(INPUT_DIRECTORY, context_name)
+
+def does_not_match(binding: str, binding_keystroke: str):
+    return not (binding.startswith(binding_keystroke + ',') or binding.startswith('"' + binding_keystroke + '"' + ','))
