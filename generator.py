@@ -90,6 +90,9 @@ def compute_modifier_key_combinations(modifiers):
         modifier_combinations.extend(new_combinations)
     return modifier_combinations
 
+def should_assign_all_modifiers(keybind):
+    return len(keybind) > 1 and keybind[-1] == '+' and not (keybind[-2] == '-' and len(keybind) > 2)
+
 def remove_files_from(directory):
     for filename in os.listdir(directory):
         os.remove(os.path.join(directory, filename))
