@@ -50,14 +50,15 @@ class TalonBuilder:
 
     def preprocess_contexts(self):
         for context in self.contexts:
-            new_keystrokes = []
+            new_keystrokes = {}
             keys_to_remove = []
             for key, action_description in context:
                 if should_assign_all_modifiers(key):
-                    new_keystrokes.extend(compute_modifier_key_combinations_applied_to_key(KEY_MODIFIERS, key[:-1]))
-                    keys_to_remove.append(key)
+                    new_combinbtions = compute_modifier_key_combinations_applied_to_key(KEY_MODIFIERS, key[:-1])
+                    for combinbtion in new_combinbtions:
+                        new_keystrokes[combinbtion] = action_description
             for keystroke in new_keystrokes:
-                context.update(keystroke, action_description)
+                context.update(keystroke, new_keystrokes[keystroke])
             for key in keys_to_remove:
                 context.remove(key)
 
@@ -179,7 +180,7 @@ def build_key_rebind(real_key: str, target_key: str):
 
 def build_mouse_button_key_bind(key: str, action: str):
     mouse_button = compute_mouse_button_from_mouse_button_key_bind_description(action)
-    intermediary = f'key({key}:down): mouse_drag({mouse_button})\nkey({key}:up): mouse_release({mouse_button})\n\n'
+    intermediary = f'key({key}:down): mouse_drag({mouse_button})\n\nkey({key}:up): mouse_release({mouse_button})\n\n'
     return intermediary
 
 def compute_mouse_button_from_mouse_button_key_bind_description(description: str):
