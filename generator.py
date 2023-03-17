@@ -74,6 +74,11 @@ class TalonGenerator:
         generate_python_files(self.output_directory, self.builder.get_python_files())
         generate_talon_files(self.output_directory, self.builder.get_talon_files())
 
+def compute_modifier_key_combinations_applied_to_key(modifiers, key):
+    modifier_combinations = compute_modifier_key_combinations(modifiers)
+    combinations_applied_to_key = [combination + '-' + key for combination in modifier_combinations]
+    return combinations_applied_to_key
+
 def compute_modifier_key_combinations(modifiers):
     modifier_combinations = []
     for index, modifier in enumerate(modifiers):
