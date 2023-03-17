@@ -7,6 +7,7 @@ from .tag_manager import manager
 MOUSE_BINDING_PREFIX = 'mouse '
 TYPING_BINDING_PREFIX = 'type '
 TAP_BINDING_KEYWORD = ' tap '
+KEY_MODIFIERS = ['ctrl', 'shift', 'alt', 'super']
 
 class TalonBuilder:
     def __init__(self, contexts: ContextSet):
@@ -72,6 +73,22 @@ class TalonGenerator:
         manager.reset()
         generate_python_files(self.output_directory, self.builder.get_python_files())
         generate_talon_files(self.output_directory, self.builder.get_talon_files())
+
+def compute_modifier_key_combinations(modifiers):
+    modifier_combinations = []
+    for index, modifier in enumerate(modifiers):
+        modifier_combinations.append(modifier)
+        remaining_modifiers = []
+        if index < len(modifiers) - 1:
+            remaining_modifiers = modifiers[index + 1:]
+        new_combinations = []
+        for remaining_modifier in remaining_modifiers:
+            new_combination_base = '-'+ remaining_modifier
+            for new_combination in new_combinations[:]:
+                new_combinations.append(new_combination + new_combination_base)
+            new_combinations.append(modifier + new_combination_base)
+        modifier_combinations.extend(new_combinations)
+    return modifier_combinations
 
 def remove_files_from(directory):
     for filename in os.listdir(directory):
