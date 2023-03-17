@@ -29,6 +29,12 @@ class Keybinds:
                                                f'keypress,targetkey')
                 self.bindings[row[0]] = row[1]
 
+    def update(self, filename: str, value):
+        self.bindings[filename] = value
+    
+    def remove(self, filename: str):
+        del self.bindings[filename]
+
     def __iter__(self):
         return self.bindings.items().__iter__()
     
