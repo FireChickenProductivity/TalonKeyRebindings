@@ -25,6 +25,7 @@ class TalonBuilder:
 
     def build(self):
         self.initialize_file_representations()
+        self.preprocess_contexts()
         for context in self.contexts:
             context_tag_name = compute_tag_name_for_context(context.context)
             intermediary = compute_talon_script_header(context_tag_name)
@@ -49,13 +50,16 @@ class TalonBuilder:
 
     def preprocess_contexts(self):
         for context in self.contexts:
+            new_keystrokes = []
+            keys_to_remove = []
             for key, action_description in context:
                 if should_assign_all_modifiers(key):
-                    new_keystrokes = compute_modifier_key_combinations_applied_to_key(KEY_MODIFIERS, key[:-1])
-                    for keystroke in new_keystrokes:
-                        context[keystroke] = action_description
-                    del context[key]
-
+                    new_keystrokes.extend(compute_modifier_key_combinations_applied_to_key(KEY_MODIFIERS, key[:-1]))
+                    keys_to_remove.append(key)
+            for keystroke in new_keystrokes:
+                context.update(keystroke, action_description)
+            for key in keys_to_remove:
+                context.remove(key)
 
     def watch(self, callback):
         self.contexts.set_reload_callback(self.callback)
