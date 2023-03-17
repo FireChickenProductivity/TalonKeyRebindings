@@ -5,7 +5,7 @@ This is a work in progress. There may be unidentified issues.
 Download the code, unzip, and place in the talon user directory. After talon runs, it should generate the needed folders.
 
 # Keybindings
-Keybindings can be defined by creating .txt files in the Key Bindings folder. The name of the file determines the name of the context in which the keybindings are active. Only the key bindings defined in main.txt are active by default. Only letters and the underscore character (_) are allowed in the names of these files. Each binding goes on a separate line.
+Keybindings can be defined by creating .txt files in the "Fire Chicken Key Bindings Input" folder that this code will generate in the talon user directory. The name of the file determines the name of the context in which the keybindings are active. Only the key bindings defined in main.txt are active by default. Only letters and the underscore character (_) are allowed in the names of these files. Each binding goes on a separate line.
 
 Example lines:
 
