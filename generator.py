@@ -47,6 +47,16 @@ class TalonBuilder:
             self.python_files[context.context] = build_tag_creation_code(context_tag_name)
         print(self.talon_files)
 
+    def preprocess_contexts(self):
+        for context in self.contexts:
+            for key, action_description in context:
+                if should_assign_all_modifiers(key):
+                    new_keystrokes = compute_modifier_key_combinations_applied_to_key(KEY_MODIFIERS, key[:-1])
+                    for keystroke in new_keystrokes:
+                        context[keystroke] = action_description
+                    del context[key]
+
+
     def watch(self, callback):
         self.contexts.set_reload_callback(self.callback)
         self.user_callback = callback
@@ -77,6 +87,7 @@ class TalonGenerator:
 def compute_modifier_key_combinations_applied_to_key(modifiers, key):
     modifier_combinations = compute_modifier_key_combinations(modifiers)
     combinations_applied_to_key = [combination + '-' + key for combination in modifier_combinations]
+    combinations_applied_to_key.append(key)
     return combinations_applied_to_key
 
 def compute_modifier_key_combinations(modifiers):
