@@ -2,9 +2,9 @@ from .ingest import ContextSet
 from .generator import TalonBuilder, TalonGenerator
 from .fire_chicken.path_utilities import compute_file_directory, create_directory_if_nonexistent
 import os
-from talon import Module
+from talon import Module, actions
 
-INPUT_DIRECTORY = os.path.join(compute_file_directory(__file__), 'Key Bindings')
+INPUT_DIRECTORY = os.path.join(actions.path.talon_user(), 'Fire Chicken Key Bindings Input')
 OUTPUT_DIRECTORY = os.path.join(compute_file_directory(__file__), 'talon_output')
 TAG_MANAGER_FILEPATH = os.path.join(compute_file_directory(__file__), 'tag_manager.py')
 def set_up():
