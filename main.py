@@ -2,12 +2,14 @@ from .ingest import ContextSet
 from .generator import TalonBuilder, TalonGenerator
 from .fire_chicken.path_utilities import compute_file_directory, create_directory_if_nonexistent
 import os
-from talon import Module, actions
+from talon import Module, actions, app
 
-INPUT_DIRECTORY = os.path.join(actions.path.talon_user(), 'Fire Chicken Key Bindings Input')
+INPUT_DIRECTORY = None
 OUTPUT_DIRECTORY = os.path.join(compute_file_directory(__file__), 'talon_output')
 TAG_MANAGER_FILEPATH = os.path.join(compute_file_directory(__file__), 'tag_manager.py')
 def set_up():
+    global INPUT_DIRECTORY
+    INPUT_DIRECTORY = os.path.join(actions.path.talon_user(), 'Fire Chicken Key Bindings Input')
     create_directory_if_nonexistent(INPUT_DIRECTORY)
     create_directory_if_nonexistent(OUTPUT_DIRECTORY)
     context_set = ContextSet()
@@ -15,7 +17,7 @@ def set_up():
     generator = TalonGenerator(builder, OUTPUT_DIRECTORY, TAG_MANAGER_FILEPATH)
     context_set.load(INPUT_DIRECTORY)
 
-set_up()
+app.register('ready', set_up)
 
 module = Module()
 @module.action_class
