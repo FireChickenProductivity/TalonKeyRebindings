@@ -29,7 +29,6 @@ class Actions:
             if os.path.getsize(filepath):
                 file.write('\n')
             file.write(text)
-            print('appending')
     
     def keybinder_remove_key_bind(binding_keystroke: str, context_name: str = 'main'):
         ''''''
@@ -42,6 +41,10 @@ class Actions:
                 if does_not_match(line, binding_keystroke):
                     file.write(line)
 
+    def keybinder_remove_context(context_name: str):
+        ''''''
+        filepath = get_keybinding_filepath(context_name) + '.txt'
+        os.remove(filepath)
 
 def get_keybinding_filepath(context_name: str):
     return os.path.join(INPUT_DIRECTORY, context_name)
