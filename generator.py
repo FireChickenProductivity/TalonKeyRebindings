@@ -249,12 +249,12 @@ def build_key_command_start(keybind: str) -> str:
 
 def build_tag_activation_action_call(tag_name: str) -> str:
     '''Returns the telling script code to activate the tag in the tag manager specified by name'''
-    intermediary = f"\tuser.talon_key_rebindings_activate_tag('{tag_name}')\n\n"
+    intermediary = f"\tuser.keybinder_activate_tag('{tag_name}')\n\n"
     return intermediary
 
 def build_tag_deactivation_action_call(tag_name: str) -> str:
-    '''Returns the telling script code to activate the tag specified by name in the tag manager'''
-    intermediary = f"\tuser.talon_key_rebindings_deactivate_tag('{tag_name}')\n\n"
+    '''Returns the telling script code to deactivate the tag specified by name in the tag manager'''
+    intermediary = f"\tuser.keybinder_deactivate_tag('{tag_name}')\n\n"
     return intermediary
 
 def compute_text_after_prefix(prefix: str, text: str):
