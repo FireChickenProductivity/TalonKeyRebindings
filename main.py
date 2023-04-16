@@ -1,5 +1,5 @@
 from .ingest import ContextSet
-from .generator import TalonBuilder, TalonGenerator
+from .generator import TalonBuilder, TalonGenerator, compute_tag_name_for_context
 from .fire_chicken.path_utilities import compute_file_directory, create_directory_if_nonexistent
 import os
 from talon import Module, actions, app
@@ -45,6 +45,17 @@ class Actions:
         ''''''
         filepath = get_keybinding_filepath(context_name) + '.txt'
         os.remove(filepath)
+    
+    def keybinder_activate_context(context_name: str):
+        ''''''
+        tag_name = compute_tag_name_for_context(context_name)
+        actions.user.keybinder_activate_tag(tag_name)
+    
+    def keybinder_deactivate_context(context_name: str):
+        ''''''
+        tag_name = compute_tag_name_for_context(context_name)
+        actions.user.keybinder_deactivate_tag(tag_name)
+
 
 def get_keybinding_filepath(context_name: str):
     return os.path.join(INPUT_DIRECTORY, context_name)
