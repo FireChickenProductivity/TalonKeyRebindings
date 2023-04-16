@@ -54,6 +54,14 @@ keybinder_remove_context(context_name)
 
 Removes the keybindings associated with the specified context. context_name is the name of the keybinding file to remove (you do not need to add the file extension).
 
+keybinder_activate_context(context_name)
+
+Activates the specified context. 
+
+keybinder_deactivate_context(context_name)
+
+Deactivates the specified context. 
+
 # Known Issues
 The keybindings may not load at all if any of the files are formatted incorrectly.
 
