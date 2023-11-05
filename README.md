@@ -48,7 +48,19 @@ text is text to insert into the keybinding file. context_name is the name of the
 
 keybinder_remove_key_bind(binding_keystroke, context_name = 'main')
 
-binding_keystroke is the text for the keystroke that has been bound to (omit double quotes when used to surround the keystroke in the file). context_name is the name of the keybinding file to remove from (you do not need to add the file extension).
+binding_keystroke is the text for the keystroke that has been bound to (omit double quotes when used to surround the keystroke in the file). This is just the keystroke and not the entire keybinding line. context_name is the name of the keybinding file to remove from (you do not need to add the file extension).
+
+keybinder_remove_context(context_name)
+
+Removes the keybindings associated with the specified context. context_name is the name of the keybinding file to remove (you do not need to add the file extension).
+
+keybinder_activate_context(context_name)
+
+Activates the specified context. 
+
+keybinder_deactivate_context(context_name)
+
+Deactivates the specified context. 
 
 # Known Issues
 The keybindings may not load at all if any of the files are formatted incorrectly.

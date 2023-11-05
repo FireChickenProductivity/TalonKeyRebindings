@@ -25,6 +25,7 @@ class TalonBuilder:
 
     def build(self):
         self.initialize_file_representations()
+        self.preprocess_contexts()
         for context in self.contexts:
             context_tag_name = compute_tag_name_for_context(context.context)
             intermediary = compute_talon_script_header(context_tag_name)
@@ -46,6 +47,20 @@ class TalonBuilder:
             self.talon_files[context.context] = intermediary
             self.python_files[context.context] = build_tag_creation_code(context_tag_name)
         print(self.talon_files)
+
+    def preprocess_contexts(self):
+        for context in self.contexts:
+            new_keystrokes = {}
+            keys_to_remove = []
+            for key, action_description in context:
+                if should_assign_all_modifiers(key):
+                    new_combinbtions = compute_modifier_key_combinations_applied_to_key(KEY_MODIFIERS, key[:-1])
+                    for combinbtion in new_combinbtions:
+                        new_keystrokes[combinbtion] = action_description
+            for keystroke in new_keystrokes:
+                context.update(keystroke, new_keystrokes[keystroke])
+            for key in keys_to_remove:
+                context.remove(key)
 
     def watch(self, callback):
         self.contexts.set_reload_callback(self.callback)
@@ -74,6 +89,12 @@ class TalonGenerator:
         generate_python_files(self.output_directory, self.builder.get_python_files())
         generate_talon_files(self.output_directory, self.builder.get_talon_files())
 
+def compute_modifier_key_combinations_applied_to_key(modifiers, key):
+    modifier_combinations = compute_modifier_key_combinations(modifiers)
+    combinations_applied_to_key = [combination + '-' + key for combination in modifier_combinations]
+    combinations_applied_to_key.append(key)
+    return combinations_applied_to_key
+
 def compute_modifier_key_combinations(modifiers):
     modifier_combinations = []
     for index, modifier in enumerate(modifiers):
@@ -89,6 +110,9 @@ def compute_modifier_key_combinations(modifiers):
             new_combinations.append(modifier + new_combination_base)
         modifier_combinations.extend(new_combinations)
     return modifier_combinations
+
+def should_assign_all_modifiers(keybind):
+    return len(keybind) > 1 and keybind[-1] == '+' and not (keybind[-2] == '-' and len(keybind) > 2 and not keybind[-3] == '-')
 
 def remove_files_from(directory):
     for filename in os.listdir(directory):
@@ -156,7 +180,7 @@ def build_key_rebind(real_key: str, target_key: str):
 
 def build_mouse_button_key_bind(key: str, action: str):
     mouse_button = compute_mouse_button_from_mouse_button_key_bind_description(action)
-    intermediary = f'key({key}:down): mouse_drag({mouse_button})\nkey({key}:up): mouse_release({mouse_button})\n\n'
+    intermediary = f'key({key}:down): mouse_drag({mouse_button})\n\nkey({key}:up): mouse_release({mouse_button})\n\n'
     return intermediary
 
 def compute_mouse_button_from_mouse_button_key_bind_description(description: str):
@@ -225,12 +249,12 @@ def build_key_command_start(keybind: str) -> str:
 
 def build_tag_activation_action_call(tag_name: str) -> str:
     '''Returns the telling script code to activate the tag in the tag manager specified by name'''
-    intermediary = f"\tuser.talon_key_rebindings_activate_tag('{tag_name}')\n\n"
+    intermediary = f"\tuser.keybinder_activate_tag('{tag_name}')\n\n"
     return intermediary
 
 def build_tag_deactivation_action_call(tag_name: str) -> str:
-    '''Returns the telling script code to activate the tag specified by name in the tag manager'''
-    intermediary = f"\tuser.talon_key_rebindings_deactivate_tag('{tag_name}')\n\n"
+    '''Returns the telling script code to deactivate the tag specified by name in the tag manager'''
+    intermediary = f"\tuser.keybinder_deactivate_tag('{tag_name}')\n\n"
     return intermediary
 
 def compute_text_after_prefix(prefix: str, text: str):

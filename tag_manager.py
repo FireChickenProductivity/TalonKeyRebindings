@@ -52,11 +52,11 @@ manager = TagManager()
 module = Module()
 @module.action_class
 class Actions:
-    def talon_key_rebindings_activate_tag(name: str):
+    def keybinder_activate_tag(name: str):
         '''Activates the specified key rebinding context tag'''
         manager.tag_on(name)
     
-    def talon_key_rebindings_deactivate_tag(name: str):
+    def keybinder_deactivate_tag(name: str):
         '''Deactivates the specified key rebinding context tag'''
         manager.tag_off(name)
 
