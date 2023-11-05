@@ -1,8 +1,10 @@
-from talon import Module, actions, cron
+from talon import Module, actions, cron, settings
 
 module = Module()
-insert_delay = module.setting(
-    'talon_key_rebindings_insert_delay',
+insert_delay_setting_name = 'talon_key_rebindings_insert_delay'
+insert_delay = 'user.' + insert_delay_setting_name
+module.setting(
+    insert_delay_setting_name,
     type = int,
     default = 0,
     desc = 'How long to pause between disabling hot keys and inserting the text with the talon_key_rebindings_insert action'
@@ -56,7 +58,7 @@ class Actions:
         def insert_and_reenable_hotkeys(text):
             actions.insert(text)
             actions.mode.enable("hotkey")
-        cron.after(f'{insert_delay.get()}ms', lambda: insert_and_reenable_hotkeys(text))
+        cron.after(f'{settings.get(insert_delay)}ms', lambda: insert_and_reenable_hotkeys(text))
     
     def talon_key_rebindings_start_tap(keystroke: str, interval: float, limit: int = 0):
         ''''''
